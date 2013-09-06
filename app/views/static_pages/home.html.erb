@@ -1,0 +1,22 @@
+<script type="text/javascript">
+function readCookie(name) {
+    var nameEQ = name + "=";
+    var ca = document.cookie.split(';');
+    for(var i=0;i < ca.length;i++) {
+        var c = ca[i];
+        while (c.charAt(0)==' ') c = c.substring(1,c.length);
+        if (c.indexOf(nameEQ) == 0) return c.substring(nameEQ.length,c.length);
+    }
+    return null;
+}
+var cookieValue = readCookie('coffeeroomrandid');
+
+if (cookieValue) {
+	console.log("Cookie Exists!");
+}
+else {
+	var rand = Math.floor(Math.random() * (9000000000000 - 100000000000 + 1)) + 100000000000;
+	document.cookie = "coffeeroomrandid=" + rand;
+	console.log(document.cookie);
+}
+</script>
