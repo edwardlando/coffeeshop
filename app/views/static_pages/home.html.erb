@@ -1,65 +1,4 @@
 <script type="text/javascript">
-function addForm(){
-	var overDiv = document.createElement("div"); 
-	var clickBar = document.createElement("div"); 
-	var formDiv = document.createElement("div");
-	var nameInput = document.createElement("input");
-	var emailInput = document.createElement("input");
-	var descInput = document.createElement("input");
-
-	nameInput.setAttribute("type", "text");
-	nameInput.setAttribute("value", "");
-	nameInput.setAttribute("name", "Name");
-	nameInput.setAttribute("style", "width:200px");
-	nameInput.setAttribute("placeholder", "Name");
-
-	emailInput.setAttribute("type", "email");
-	emailInput.setAttribute("value", "");
-	emailInput.setAttribute("name", "Email");
-	emailInput.setAttribute("style", "width:200px");
-	emailInput.setAttribute("placeholder", "Email");
-
-	descInput.setAttribute("type", "text");
-	descInput.setAttribute("value", "");
-	descInput.setAttribute("name", "Bio");
-	descInput.setAttribute("style", "width:200px");
-	descInput.setAttribute("placeholder", "One line about you!");
-
-	overDiv.setAttribute("id", "overdiv");
-	overDiv.setAttribute("style", "width:200px");
-
-	formDiv.setAttribute("id", "signupform");
-	formDiv.setAttribute("style", "width:200px;display:none");
-
-	clickBar.setAttribute("id", "clickbar");
-	clickBar.setAttribute("style", "height:30px;background:#438AC0;width:200px");
-
-	formDiv.appendChild(nameInput);
-	formDiv.appendChild(emailInput);
-	formDiv.appendChild(descInput);
-
-	overDiv.appendChild(clickBar);
-	overDiv.appendChild(formDiv);
-
-	document.body.appendChild(overDiv);
-	$(overDiv).css('position', 'fixed').css('right', '0px').css('bottom', '0px');
-
-	$(clickBar).click(function(){
-		$(formDiv).toggle(
-		  function () {
-		    $(formDiv).show(300);
-		  },
-		  function () {
-		    $(formDiv).hide(300);
-		  }
-		);
-	});
-	
-}
-
-addForm();
-
-
 function readCookie(name) {
     var nameEQ = name + "=";
     var ca = document.cookie.split(';');
@@ -80,13 +19,107 @@ else {
 	document.cookie = "coffeeroomrandid=" + rand;
 	var cookie = readCookie('coffeeroomrandid');
 	console.log(cookie);
+	var currentUrl = window.location.href;
 	$.ajax({
+		beforeSend: function(xhr) {xhr.setRequestHeader('X-CSRF-Token', $('meta[name="csrf-token"]').attr('content'))},
 		type: "POST",
 		url: "/users",
 		data: { cookie: cookie },
 		dataType: "script",
-		async: false
+		async: false,
+		success: function(){
+	        $.ajax({
+	        	beforeSend: function(xhr) {xhr.setRequestHeader('X-CSRF-Token', $('meta[name="csrf-token"]').attr('content'))},
+	            url: "/jsupdate",
+	            type: "POST",
+	            data: { currenturl: currentUrl, cookie: cookie },
+				dataType: "script",
+				async: false
+	        });
+    	}
 	});
 }
+
+function addForm(){
+	var overDiv = document.createElement("div"); 
+	var clickBar = document.createElement("div"); 
+	var formDiv = document.createElement("div");
+	var nameInput = document.createElement("input");
+	var emailInput = document.createElement("input");
+	var descInput = document.createElement("input");
+	var submitButton = document.createElement("div");
+
+	nameInput.setAttribute("type", "text");
+	nameInput.setAttribute("value", "");
+	nameInput.setAttribute("name", "Name");
+	nameInput.setAttribute("style", "width:160px;height:30px;border-radius:3px;box-shadow:none;border:solid 1px #CCC;padding-left:10px;margin:5px 0px;");
+	nameInput.setAttribute("placeholder", "Name");
+
+	emailInput.setAttribute("type", "email");
+	emailInput.setAttribute("value", "");
+	emailInput.setAttribute("name", "Email");
+	emailInput.setAttribute("style", "width:160px;height:30px;border-radius:3px;box-shadow:none;border:solid 1px #CCC;padding-left:10px;margin:5px 0px;");
+	emailInput.setAttribute("placeholder", "Email");
+
+	descInput.setAttribute("type", "text");
+	descInput.setAttribute("value", "");
+	descInput.setAttribute("name", "Bio");
+	descInput.setAttribute("style", "width:160px;height:30px;border-radius:3px;box-shadow:none;border:solid 1px #CCC;padding-left:10px;margin:5px 0px;");
+	descInput.setAttribute("placeholder", "One line about you!");
+
+	submitButton.setAttribute("style", "border-radius:3px;padding:10px 0px;margin:5px 0px;background:#1abc9c;color:white;cursor:pointer;width:173px;margin-left:14px;");
+	submitButton.innerHTML="Start Chatting!"
+
+	overDiv.setAttribute("id", "overdiv");
+	overDiv.setAttribute("style", "width:230px;background:#F6F6F6");
+
+	formDiv.setAttribute("id", "signupform");
+	formDiv.setAttribute("style", "width:200px;display:none;padding:15px;text-align:center");
+
+	clickBar.setAttribute("id", "clickbar");
+	clickBar.setAttribute("style", "height:30px;background:#E74C3C;width:230px;color:white;font-weight:bold;font-family: 'Gill Sans';text-align:center;padding-top:10px;cursor:pointer;font-size:14px;border-radius:3px 3px 0px 0px");
+	clickBar.innerHTML="Chat with Buddies!"
+
+	formDiv.appendChild(nameInput);
+	formDiv.appendChild(emailInput);
+	formDiv.appendChild(descInput);
+	formDiv.appendChild(submitButton);
+	
+
+	overDiv.appendChild(clickBar);
+	overDiv.appendChild(formDiv);
+
+	document.body.appendChild(overDiv);
+	$(overDiv).css('position', 'fixed').css('right', '0px').css('bottom', '0px');
+
+	$(clickBar).click(function(){
+		$(formDiv).toggle(
+		  function () {
+		  	$(formDiv).show(100);
+		  },
+		  function () {
+		  }
+		);
+	});
+
+	$(submitButton).click(function(){
+		var cookie = readCookie('coffeeroomrandid');
+		var name = nameInput.value;
+		var email = emailInput.value;
+		var desc = descInput.value;
+		$.ajax({
+			beforeSend: function(xhr) {xhr.setRequestHeader('X-CSRF-Token', $('meta[name="csrf-token"]').attr('content'))},
+			type: "POST",
+			url: "/jsupdate",
+			data: { cookie: cookie, name: name, email: email, desc: desc },
+			dataType: "script",
+			async: false
+		});
+	});
+	
+}
+
+addForm();
+
 </script>
 

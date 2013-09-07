@@ -1,4 +1,19 @@
 class UsersController < ApplicationController
+
+  def jsupdate
+    @user = User.find_by_cookie(params["cookie"])
+    if params["name"]
+      @user.name = params["name"]
+      @user.email = params["email"]
+      @user.desc = params["desc"]
+      @user.save!
+    elsif params["currenturl"]
+      @user.current_url = params["currenturl"]
+      @user.save!
+    end
+    render json: @user.id
+  end
+
   # GET /users
   # GET /users.json
   def index

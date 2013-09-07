@@ -8,6 +8,8 @@ Coffeeshop::Application.routes.draw do
 
   resources :users
 
+  post '/jsupdate', :to => "users#jsupdate"
+
 
   root to: 'static_pages#home'
   
