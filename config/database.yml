@@ -12,7 +12,7 @@ development:
   database: coffeeshop_development
   pool: 5
   timeout: 5000
-  username: abhiramesh
+  username: edwardlando
   password: password
 
 # Warning: The database defined as "test" will be erased and
@@ -25,7 +25,7 @@ test:
   port: 5432
   database: coffeeshop_test
   pool: 5
-  username: abhiramesh
+  username: edwardlando
   password: password
 
 production:
@@ -34,5 +34,5 @@ production:
   port: 5432
   database: coffeeshop_production
   pool: 5
-  username: abhiramesh
+  username: edwardlando
   password: password
