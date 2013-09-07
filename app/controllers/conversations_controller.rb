@@ -2,11 +2,11 @@ class ConversationsController < ApplicationController
   # GET /conversations
   # GET /conversations.json
   def index
-    @conversations = Conversation.all
-
-    respond_to do |format|
-      format.html # index.html.erb
-      format.json { render json: @conversations }
+    @conversations = Conversation.where(:user_id => User.find_by_cookie(params["cookie"]).id, :second_user_id => User.find(params["second_user_id"]))[0]
+    if @conversations != []
+      render json: "true"
+    else
+      render json: "false"
     end
   end
 

@@ -201,22 +201,41 @@ function createUserList(list) {
 		userDiv.innerHTML = users[i]["name"]
 		tableDiv.appendChild(userDiv);
 	}
-	$(".userdiv").click(function(){
+
+
+		$(".userdiv").click(function(){
 		var cookie = readCookie('coffeeroomrandid');
 		var recipientId = $(this).attr("data-userid");
-		$.ajax({
-			beforeSend: function(xhr) {xhr.setRequestHeader('X-CSRF-Token', $('meta[name="csrf-token"]').attr('content'))},
-			type: "POST",
-			url: "/conversations",
-			data: { cookie: cookie, second_user_id: recipientId },
-			dataType: "script",
-			async: false,
-			success: function(response){
-				var conversationId = response;
-				createConvoScreen(conversationId);
-			}
+			$.ajax({
+				beforeSend: function(xhr) {xhr.setRequestHeader('X-CSRF-Token', $('meta[name="csrf-token"]').attr('content'))},
+				type: "GET",
+				url: "/conversations",
+				data: { cookie: cookie, second_user_id: recipientId },
+				dataType: "script",
+				async: false,
+				complete: function(response){
+					if (response.responseText == "true") {
+						return false;
+					}
+					else {
+						$.ajax({
+							beforeSend: function(xhr) {xhr.setRequestHeader('X-CSRF-Token', $('meta[name="csrf-token"]').attr('content'))},
+							type: "POST",
+							url: "/conversations",
+							data: { cookie: cookie, second_user_id: recipientId },
+							dataType: "script",
+							async: false,
+							success: function(response){
+								var conversationId = response;
+								createConvoScreen(conversationId);
+							}
+						});
+					}
+				}
+			});
+
+			
 		});
-	});
 
 }
 
@@ -256,8 +275,8 @@ function createConvoScreen(conversationId){
 	overDiv.appendChild(messageDiv);
 	overDiv.appendChild(submitButton);
 	
-
 	document.body.appendChild(overDiv);
+	
 	$(overDiv).css('position', 'fixed').css('right', '235px').css('bottom', '0px');
 
 	$(clickBar).click(function(){
