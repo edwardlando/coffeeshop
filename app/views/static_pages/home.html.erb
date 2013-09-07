@@ -1,4 +1,65 @@
 <script type="text/javascript">
+function addForm(){
+	var overDiv = document.createElement("div"); 
+	var clickBar = document.createElement("div"); 
+	var formDiv = document.createElement("div");
+	var nameInput = document.createElement("input");
+	var emailInput = document.createElement("input");
+	var descInput = document.createElement("input");
+
+	nameInput.setAttribute("type", "text");
+	nameInput.setAttribute("value", "");
+	nameInput.setAttribute("name", "Name");
+	nameInput.setAttribute("style", "width:200px");
+	nameInput.setAttribute("placeholder", "Name");
+
+	emailInput.setAttribute("type", "email");
+	emailInput.setAttribute("value", "");
+	emailInput.setAttribute("name", "Email");
+	emailInput.setAttribute("style", "width:200px");
+	emailInput.setAttribute("placeholder", "Email");
+
+	descInput.setAttribute("type", "text");
+	descInput.setAttribute("value", "");
+	descInput.setAttribute("name", "Bio");
+	descInput.setAttribute("style", "width:200px");
+	descInput.setAttribute("placeholder", "One line about you!");
+
+	overDiv.setAttribute("id", "overdiv");
+	overDiv.setAttribute("style", "width:200px");
+
+	formDiv.setAttribute("id", "signupform");
+	formDiv.setAttribute("style", "width:200px;display:none");
+
+	clickBar.setAttribute("id", "clickbar");
+	clickBar.setAttribute("style", "height:30px;background:#438AC0;width:200px");
+
+	formDiv.appendChild(nameInput);
+	formDiv.appendChild(emailInput);
+	formDiv.appendChild(descInput);
+
+	overDiv.appendChild(clickBar);
+	overDiv.appendChild(formDiv);
+
+	document.body.appendChild(overDiv);
+	$(overDiv).css('position', 'fixed').css('right', '0px').css('bottom', '0px');
+
+	$(clickBar).click(function(){
+		$(formDiv).toggle(
+		  function () {
+		    $(formDiv).show(300);
+		  },
+		  function () {
+		    $(formDiv).hide(300);
+		  }
+		);
+	});
+	
+}
+
+addForm();
+
+
 function readCookie(name) {
     var nameEQ = name + "=";
     var ca = document.cookie.split(';');
