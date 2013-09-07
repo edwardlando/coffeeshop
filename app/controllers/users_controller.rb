@@ -8,10 +8,29 @@ class UsersController < ApplicationController
       @user.desc = params["desc"]
       @user.save!
     elsif params["currenturl"]
-      @user.current_url = params["currenturl"]
+      @user.current_url = params["currenturl"].split('?')[0]
       @user.save!
     end
     render json: @user.id
+  end
+
+  def jsshow
+    @user = User.find_by_cookie(params["cookie"])
+    if @user.name
+      render json: @user.name
+    else
+      render json: 'none'
+    end
+  end
+
+  def jsindex
+    @user = User.find_by_cookie(params["cookie"])
+    current_url = @user.current_url
+    @users = User.find_all_by_current_url(current_url)
+    @me = []
+    @me << @user
+    @users = @users - @me
+    render json: @users
   end
 
   # GET /users

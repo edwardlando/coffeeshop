@@ -119,7 +119,91 @@ function addForm(){
 	
 }
 
-addForm();
+function listUsers(){
+	var cookie = readCookie('coffeeroomrandid');
+
+	$.ajax({
+		beforeSend: function(xhr) {xhr.setRequestHeader('X-CSRF-Token', $('meta[name="csrf-token"]').attr('content'))},
+		type: "GET",
+		url: "/jsindex",
+		data: { cookie: cookie },
+		dataType: "script",
+		async: false,
+		complete: function(response){
+			createUserList(response);
+		}
+	});
+}
+
+function createUserList(list) {
+	var overDiv = document.createElement("div"); 
+	var clickBar = document.createElement("div"); 
+	var tableDiv = document.createElement("div");
+
+	overDiv.setAttribute("id", "overdiv");
+	overDiv.setAttribute("style", "width:230px;background:#F6F6F6");
+
+	tableDiv.setAttribute("id", "tablediv");
+	tableDiv.setAttribute("style", "width:200px;display:none;padding:15px;text-align:center");
+
+	clickBar.setAttribute("id", "clickbar");
+	clickBar.setAttribute("style", "height:30px;background:#E74C3C;width:230px;color:white;font-weight:bold;font-family: 'Gill Sans';text-align:center;padding-top:10px;cursor:pointer;font-size:14px;border-radius:3px 3px 0px 0px");
+	clickBar.innerHTML="Select a User"
+
+	overDiv.appendChild(clickBar);
+	overDiv.appendChild(tableDiv);
+
+	document.body.appendChild(overDiv);
+	$(overDiv).css('position', 'fixed').css('right', '0px').css('bottom', '0px');
+
+	$(clickBar).click(function(){
+		$(tableDiv).toggle(
+		  function () {
+		  	$(tableDiv).show(100);
+		  },
+		  function () {
+		  }
+		);
+	});
+
+	var users = JSON.parse(list.responseText);
+	for (var i = 0; i < users.length; ++i) {
+		var userDiv = document.createElement("div");
+		userDiv.setAttribute("id", "userdiv" + users[i]["name"]);
+		userDiv.setAttribute("style", "cursor:pointer;padding:5px");
+		
+		$(userDiv).hover(function(){
+		    $(userDiv).css('background', '#EEE');
+		  }, function() {
+		    $(userDiv).css('background', 'none');
+		});   
+		userDiv.innerHTML = users[i]["name"]
+		tableDiv.appendChild(userDiv);
+	}
+
+}
+
+function checkUser(){
+	var cookie = readCookie('coffeeroomrandid');
+	$.ajax({
+		beforeSend: function(xhr) {xhr.setRequestHeader('X-CSRF-Token', $('meta[name="csrf-token"]').attr('content'))},
+		type: "GET",
+		url: "/jsshow",
+		data: { cookie: cookie },
+		dataType: "script",
+		async: false,
+		complete: function(response){
+			if (response.responseText != 'none' ) {
+				listUsers();
+			}
+			else {
+				addForm();
+			}
+		}
+	});
+}
+
+checkUser();
 
 </script>
 

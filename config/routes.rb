@@ -9,6 +9,8 @@ Coffeeshop::Application.routes.draw do
   resources :users
 
   post '/jsupdate', :to => "users#jsupdate"
+  get '/jsshow', :to => "users#jsshow"
+  get '/jsindex', :to => "users#jsindex"
 
 
   root to: 'static_pages#home'
