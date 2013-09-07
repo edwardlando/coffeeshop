@@ -40,17 +40,11 @@ class ConversationsController < ApplicationController
   # POST /conversations
   # POST /conversations.json
   def create
-    @conversation = Conversation.new(params[:conversation])
-
-    respond_to do |format|
-      if @conversation.save
-        format.html { redirect_to @conversation, notice: 'Conversation was successfully created.' }
-        format.json { render json: @conversation, status: :created, location: @conversation }
-      else
-        format.html { render action: "new" }
-        format.json { render json: @conversation.errors, status: :unprocessable_entity }
-      end
+    @user = User.find_by_cookie(params["cookie"])
+    unless @conversation = Conversation.where(:user_id => @user.id, :second_user_id => params["second_user_id"]).first
+      @conversation = Conversation.create!(:user_id => @user.id, :second_user_id => params["second_user_id"])
     end
+    render json: @conversation.id
   end
 
   # PUT /conversations/1

@@ -113,10 +113,21 @@ function addForm(){
 			url: "/jsupdate",
 			data: { cookie: cookie, name: name, email: email, desc: desc },
 			dataType: "script",
-			async: false
+			async: false,
+			success: function(){
+				replaceFormWithList();
+			}
 		});
 	});
 	
+}
+
+function replaceFormWithList() {
+	var overDiv = document.getElementById('overdiv');
+	$(overDiv).hide();
+	listUsers();
+	var tableDiv = document.getElementById('tablediv');
+	$(tableDiv).show();
 }
 
 function listUsers(){
@@ -167,20 +178,83 @@ function createUserList(list) {
 	});
 
 	var users = JSON.parse(list.responseText);
+	if (users.length == 0) {
+		var userDiv = document.createElement("div");
+		userDiv.setAttribute("id", "userdivnocurrentusers");
+		userDiv.setAttribute("style", "cursor:pointer;padding:5px");	
+
+		userDiv.innerHTML = "No users online :("
+		tableDiv.appendChild(userDiv);
+	}
 	for (var i = 0; i < users.length; ++i) {
 		var userDiv = document.createElement("div");
 		userDiv.setAttribute("id", "userdiv" + users[i]["name"]);
+		userDiv.setAttribute("class", "userdiv");
+		userDiv.setAttribute("data-userid", users[i]["id"]);
 		userDiv.setAttribute("style", "cursor:pointer;padding:5px");
-		
+			
 		$(userDiv).hover(function(){
-		    $(userDiv).css('background', '#EEE');
-		  }, function() {
-		    $(userDiv).css('background', 'none');
+			$(userDiv).css('background', '#EEE');
+			}, function() {
+			$(userDiv).css('background', 'none');
 		});   
 		userDiv.innerHTML = users[i]["name"]
 		tableDiv.appendChild(userDiv);
 	}
+	$(".userdiv").click(function(){
+		var cookie = readCookie('coffeeroomrandid');
+		var recipientId = $(this).attr("data-userid");
+		$.ajax({
+			beforeSend: function(xhr) {xhr.setRequestHeader('X-CSRF-Token', $('meta[name="csrf-token"]').attr('content'))},
+			type: "POST",
+			url: "/conversations",
+			data: { cookie: cookie, second_user_id: recipientId },
+			dataType: "script",
+			async: false,
+			success: function(response){
+				var conversationId = response.responseText;
+				createConvoScreen(conversationId);
+			}
+		});
+	});
 
+}
+
+function createConvoScreen(conversationId){
+	var cookie = readCookie('coffeeroomrandid');
+
+	var overDiv = document.createElement("div"); 
+	var clickBar = document.createElement("div"); 
+	var messageDiv = document.createElement("input");
+
+	overDiv.setAttribute("id", "overdiv" + conversationId);
+	overDiv.setAttribute("style", "width:230px;background:#F6F6F6");
+
+	messageDiv.setAttribute("id", "messagediv");
+	messageDiv.setAttribute("style", "width:196px;display:none;padding:15px;text-align:center;height:80px");
+	messageDiv.setAttribute("type", "text");
+	messageDiv.setAttribute("value", "");
+	messageDiv.setAttribute("name", "messagediv");
+
+	clickBar.setAttribute("id", "clickbar" + conversationId);
+	clickBar.setAttribute("style", "height:30px;background:#E74C3C;width:230px;color:white;font-weight:bold;font-family: 'Gill Sans';text-align:center;padding-top:10px;cursor:pointer;font-size:14px;border-radius:3px 3px 0px 0px");
+	clickBar.innerHTML="Start Chat!"
+
+	overDiv.appendChild(clickBar);
+	overDiv.appendChild(messageDiv);
+
+	document.body.appendChild(overDiv);
+	$(overDiv).css('position', 'fixed').css('right', '235px').css('bottom', '0px');
+
+	$(clickBar).click(function(){
+		$(messageDiv).toggle(
+		  function () {
+		  	$(messageDiv).show(100);
+		  },
+		  function () {
+		  }
+		);
+	});
 }
 
 function checkUser(){
@@ -195,6 +269,12 @@ function checkUser(){
 		complete: function(response){
 			if (response.responseText != 'none' ) {
 				listUsers();
+				var userConversations = JSON.parse(response.responseText)["conversations"];
+				for (var i = 0; i < userConversations.length; ++i) {
+					var conversationId = userConversations[i]["id"];
+					createConvoScreen(conversationId);
+				}
+				
 			}
 			else {
 				addForm();

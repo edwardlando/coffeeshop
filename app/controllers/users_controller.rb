@@ -16,8 +16,9 @@ class UsersController < ApplicationController
 
   def jsshow
     @user = User.find_by_cookie(params["cookie"])
+    @conversations = Conversation.find_all_by_user_id(@user.id)
     if @user.name
-      render json: @user.name
+      render json: { name: @user.name, conversations: @conversations } 
     else
       render json: 'none'
     end
