@@ -17,6 +17,14 @@ if (cookieValue) {
 else {
 	var rand = Math.floor(Math.random() * (9000000000000 - 100000000000 + 1)) + 100000000000;
 	document.cookie = "coffeeroomrandid=" + rand;
-	console.log(document.cookie);
+	var cookie = readCookie('coffeeroomrandid');
+	console.log(cookie);
+	$.ajax({
+		type: "POST",
+		url: "/users",
+		data: { cookie: cookie },
+		dataType: "script",
+		async: false
+	});
 }
 </script>
