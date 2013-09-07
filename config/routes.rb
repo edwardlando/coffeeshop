@@ -14,6 +14,9 @@ Coffeeshop::Application.routes.draw do
   get '/jsshow', :to => "users#jsshow"
   get '/jsindex', :to => "users#jsindex"
 
+  post '/new_message', :to => "conversations#new_message"
+  get '/new_message', :to => "conversations#new_message"
+
 
   root to: 'static_pages#home'
   

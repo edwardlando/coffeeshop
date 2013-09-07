@@ -212,7 +212,7 @@ function createUserList(list) {
 			dataType: "script",
 			async: false,
 			success: function(response){
-				var conversationId = response.responseText;
+				var conversationId = response;
 				createConvoScreen(conversationId);
 			}
 		});
@@ -226,22 +226,36 @@ function createConvoScreen(conversationId){
 	var overDiv = document.createElement("div"); 
 	var clickBar = document.createElement("div"); 
 	var messageDiv = document.createElement("input");
+	var submitButton = document.createElement("div");
+
+	var convoTextDiv = document.createElement("div");
 
 	overDiv.setAttribute("id", "overdiv" + conversationId);
 	overDiv.setAttribute("style", "width:230px;background:#F6F6F6");
 
 	messageDiv.setAttribute("id", "messagediv");
-	messageDiv.setAttribute("style", "width:196px;display:none;padding:15px;text-align:center;height:80px");
+	messageDiv.setAttribute("style", "width:224px;display:none;height:30px");
 	messageDiv.setAttribute("type", "text");
 	messageDiv.setAttribute("value", "");
 	messageDiv.setAttribute("name", "messagediv");
+	messageDiv.setAttribute("data-cookie", cookie);
+
+	convoTextDiv.setAttribute("id", "convotextdiv");
+	convoTextDiv.setAttribute("style", "width:226px;display:none;");
 
 	clickBar.setAttribute("id", "clickbar" + conversationId);
 	clickBar.setAttribute("style", "height:30px;background:#E74C3C;width:230px;color:white;font-weight:bold;font-family: 'Gill Sans';text-align:center;padding-top:10px;cursor:pointer;font-size:14px;border-radius:3px 3px 0px 0px");
 	clickBar.innerHTML="Start Chat!"
 
+	submitButton.setAttribute("style", "border-radius:3px;padding:10px 0px;margin: 5px 0px 5px 28px;background:#1abc9c;color:white;cursor:pointer;width:173px;text-align:center;display:none");
+	submitButton.innerHTML="Send Message";
+	submitButton.setAttribute("id", "submitbutton");
+
 	overDiv.appendChild(clickBar);
+	overDiv.appendChild(convoTextDiv);
 	overDiv.appendChild(messageDiv);
+	overDiv.appendChild(submitButton);
+	
 
 	document.body.appendChild(overDiv);
 	$(overDiv).css('position', 'fixed').css('right', '235px').css('bottom', '0px');
@@ -254,6 +268,27 @@ function createConvoScreen(conversationId){
 		  function () {
 		  }
 		);
+		$(submitButton).toggle(
+		  function () {
+		  	$(submitButton).show(100);
+		  },
+		  function () {
+		  }
+		);
+	});
+
+	$(submitButton).click(function(){
+		var content = messageDiv.value;
+		$.ajax({
+			beforeSend: function(xhr) {xhr.setRequestHeader('X-CSRF-Token', $('meta[name="csrf-token"]').attr('content'))},
+			type: "POST",
+			url: "/new_message",
+			data: { cookie: cookie, conversation_id: conversationId, content: content },
+			dataType: "script",
+			async: false,
+			success: function(response){
+			}
+		});
 	});
 }
 

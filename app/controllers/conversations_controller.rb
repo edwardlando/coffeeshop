@@ -41,10 +41,27 @@ class ConversationsController < ApplicationController
   # POST /conversations.json
   def create
     @user = User.find_by_cookie(params["cookie"])
-    unless @conversation = Conversation.where(:user_id => @user.id, :second_user_id => params["second_user_id"]).first
+    unless @conversation = Conversation.where(:user_id => @user.id, :second_user_id => params["second_user_id"]).first || @conversation = Conversation.where(:user_id => params["second_user_id"], :second_user_id => @user.id).first
       @conversation = Conversation.create!(:user_id => @user.id, :second_user_id => params["second_user_id"])
     end
     render json: @conversation.id
+  end
+
+  def new_message
+    @conversation = Conversation.find(params["conversation_id"])
+    @user = User.find_by_cookie(params["cookie"])
+    #@user.conversations
+    if @user.id == @conversation.user_id
+      @recipient = User.find(@conversation.second_user_id)
+    elsif @user.id == @conversation.second_user_id
+      @recipient = User.find(@conversation.user_id)
+    end
+
+    @message = Message.create(:content => params["content"], :conversation_id => @conversation.id, :sender_id => @user.id, :recipient_id => @recipient.id)
+    #render json: @message
+    respond_to do |format|
+      format.js
+    end
   end
 
   # PUT /conversations/1

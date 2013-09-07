@@ -16,7 +16,7 @@
 
 $(function() {
   var faye = new Faye.Client('http://localhost:9292/faye');
-  faye.subscribe("/messages/new", function(data) {
+  faye.subscribe("/new_message", function(data) {
     eval(data);
   });
 });
