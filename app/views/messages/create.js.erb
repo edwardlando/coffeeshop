@@ -1,5 +1,5 @@
 <% broadcast "/messages/new" do %>
   $("#chat").append("<%= escape_javascript render(@message) %>");
-  console.log("nigga");
+  console.log("foobar");
 <% end %>
 $("#new_message")[0].reset();
